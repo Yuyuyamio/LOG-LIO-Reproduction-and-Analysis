@@ -2,6 +2,10 @@
 
 This repository documents my reproduction and analysis of LOG-LIO, a LiDAR-Inertial Odometry system with efficient local geometric information estimation.
 
+## Repository Strategy
+
+This repository is organized as a reproduction-oriented project rather than a direct fork of the official LOG-LIO repository. The official LOG-LIO code will be cloned locally for building and testing, while this repository mainly records my reproduction notes, environment setup, scripts, results, figures, and final report.
+
 The goal of this project is not to propose a new SLAM algorithm, but to understand how LOG-LIO uses local geometric information, including normal estimation, point distribution, and hierarchical data association, to improve LiDAR-inertial odometry.
 
 ## Project Goals
