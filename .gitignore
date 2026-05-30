@@ -8,3 +8,7 @@ loglio_docker_ws/
 *.bag
 datasets/
 loglio_docker_ws/
+
+# Python virtual environments
+venv/
+.venv/
