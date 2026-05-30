@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="900" viewBox="0 0 1100 900">
+  <rect width="100%" height="100%" fill="white"/>
+
+  <text x="550" y="45" text-anchor="middle" font-size="30" font-family="Arial" font-weight="bold">
+    LOG-LIO Method Pipeline
+  </text>
+
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="black"/>
+    </marker>
+  </defs>
+
+  <style>
+    .box { fill: #f7f7f7; stroke: #222; stroke-width: 2; rx: 16; }
+    .core { fill: #eaf2ff; stroke: #1f4e79; stroke-width: 2; rx: 16; }
+    .output { fill: #eef8ee; stroke: #2d6a2d; stroke-width: 2; rx: 16; }
+    .text { font-family: Arial; font-size: 20px; font-weight: bold; }
+    .small { font-family: Arial; font-size: 15px; }
+    .arrow { stroke: #222; stroke-width: 2.2; marker-end: url(#arrow); }
+  </style>
+
+  <rect x="350" y="80" width="400" height="70" class="box"/>
+  <text x="550" y="112" text-anchor="middle" class="text">Raw LiDAR Scan + IMU</text>
+  <text x="550" y="136" text-anchor="middle" class="small">/velodyne_points + /handsfree/imu</text>
+
+  <line x1="550" y1="150" x2="550" y2="190" class="arrow"/>
+
+  <rect x="350" y="190" width="400" height="70" class="box"/>
+  <text x="550" y="222" text-anchor="middle" class="text">IMU Processing</text>
+  <text x="550" y="246" text-anchor="middle" class="small">motion prediction + scan undistortion</text>
+
+  <line x1="550" y1="260" x2="550" y2="300" class="arrow"/>
+
+  <rect x="350" y="300" width="400" height="70" class="core"/>
+  <text x="550" y="332" text-anchor="middle" class="text">Ring FALS Normal Estimation</text>
+  <text x="550" y="356" text-anchor="middle" class="small">uses LiDAR ring and range-image structure</text>
+
+  <line x1="550" y1="370" x2="550" y2="410" class="arrow"/>
+
+  <rect x="350" y="410" width="400" height="70" class="core"/>
+  <text x="550" y="442" text-anchor="middle" class="text">Voxel Map / Extended ikd-tree</text>
+  <text x="550" y="466" text-anchor="middle" class="small">incremental local map maintenance</text>
+
+  <line x1="550" y1="480" x2="550" y2="520" class="arrow"/>
+
+  <rect x="350" y="520" width="400" height="70" class="core"/>
+  <text x="550" y="552" text-anchor="middle" class="text">Point Distribution Update</text>
+  <text x="550" y="576" text-anchor="middle" class="small">voxel-level local geometric information</text>
+
+  <line x1="550" y1="590" x2="550" y2="630" class="arrow"/>
+
+  <rect x="300" y="630" width="500" height="80" class="core"/>
+  <text x="550" y="660" text-anchor="middle" class="text">Hierarchical Data Association</text>
+  <text x="550" y="686" text-anchor="middle" class="small">point-to-surfel when reliable</text>
+  <text x="550" y="706" text-anchor="middle" class="small">fallback to point-to-plane when local geometry is weak</text>
+
+  <line x1="550" y1="710" x2="550" y2="750" class="arrow"/>
+
+  <rect x="350" y="750" width="400" height="60" class="box"/>
+  <text x="550" y="786" text-anchor="middle" class="text">Pose Optimization</text>
+
+  <line x1="550" y1="810" x2="550" y2="845" class="arrow"/>
+
+  <rect x="350" y="845" width="400" height="45" class="output"/>
+  <text x="550" y="875" text-anchor="middle" class="text">Updated Odometry + Local Map</text>
+</svg>
