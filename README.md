@@ -97,3 +97,71 @@ Important documentation files include:
 The current reproduction confirms that LOG-LIO can be built and executed on a real M2DGR rosbag sequence. The system successfully consumes LiDAR and IMU topics, processes the sequence, and produces a continuous trajectory output.
 
 The project has now moved beyond simple build verification. It includes environment setup, build troubleshooting, full rosbag execution, trajectory output checking, runtime log analysis, and source-code-level method mapping.
+
+---
+
+## Current Reproduction Status
+
+This repository currently documents a successful LOG-LIO reproduction workflow on the M2DGR `door_02` sequence.
+
+### Completed Work
+
+- Set up a ROS Noetic environment using WSL2 Ubuntu and Docker.
+- Built LOG-LIO successfully inside the Docker container.
+- Fixed missing ROS/PCL/OpenCV-related build dependencies.
+- Generated the main executable:
+
+  /root/slam_ws/devel/lib/log_lio/loglio_mapping
+
+- Verified that the ROS package can be found using `rospack find log_lio`.
+- Downloaded and checked the M2DGR `door_02.bag` sequence.
+- Confirmed the required rosbag topics:
+
+  /velodyne_points  
+  /handsfree/imu
+
+- Ran LOG-LIO on the full `door_02` sequence using:
+
+  roslaunch log_lio mapping_m2dgr.launch rviz:=false
+
+- Generated trajectory output:
+
+  results/door_02_run1/target_path.txt
+
+- Performed trajectory sanity checking.
+- Generated trajectory visualization files.
+- Added runtime log analysis based on `fast_lio_time_log.csv`.
+- Added method-to-code mapping notes for the main LOG-LIO modules.
+
+### Main Result Files
+
+The main reproduction result files are located in:
+
+results/door_02_run1/
+
+Important files include:
+
+- target_path.txt
+- pos_log.txt
+- fast_lio_time_log.csv
+- trajectory_sanity_check.md
+- trajectory_xy.svg
+- trajectory_z_time.svg
+- run_summary.txt
+
+### Main Documentation Files
+
+Important documentation files include:
+
+- docs/door_02_run_notes.md
+- docs/door_02_result_analysis.md
+- docs/trajectory_visualization_notes.md
+- docs/runtime_log_analysis.md
+- docs/method_to_code_mapping.md
+- troubleshooting/ros_build_errors.md
+
+### Current Understanding
+
+The current reproduction confirms that LOG-LIO can be built and executed on a real M2DGR rosbag sequence. The system successfully consumes LiDAR and IMU topics, processes the sequence, and produces a continuous trajectory output.
+
+The project has now moved beyond simple build verification. It includes environment setup, build troubleshooting, full rosbag execution, trajectory output checking, runtime log analysis, and source-code-level method mapping.
