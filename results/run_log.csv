@@ -1,0 +1,2 @@
+run_id,dataset,sequence,launch_file,config_file,start_time,end_time,success,notes
+door_02_run1,M2DGR,door_02,mapping_m2dgr.launch,velodyne_m2dgr.yaml,1628062054.8588,1628062181.7062,yes,"Full rosbag playback completed. LOG-LIO generated target_path.txt with 2469 trajectory rows. LiDAR topic /velodyne_points and IMU topic /handsfree/imu were confirmed. Runtime log and evo APE/RPE evaluation were generated."
