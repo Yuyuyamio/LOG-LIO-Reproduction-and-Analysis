@@ -1,152 +1,86 @@
 # LOG-LIO Reproduction and Analysis
 
-This repository documents my reproduction and analysis of **LOG-LIO**, a LiDAR-Inertial Odometry system that uses local geometric information for scan-to-map registration and pose estimation.
+A reproduction and code-level analysis of **LOG-LIO**, a LiDAR-Inertial Odometry system focused on efficient local geometric information estimation.
 
-The goal of this project is not to propose a new SLAM algorithm. Instead, it focuses on understanding how LOG-LIO connects **normal estimation**, **voxel-level point distribution**, **hierarchical data association**, and **pose optimization** in a working LiDAR-inertial odometry pipeline.
+This repository is not an algorithm modification project. Its goal is to reproduce LOG-LIO on a real ground-robot dataset, inspect its implementation, and understand how local geometry is used in LiDAR-inertial odometry.
 
-> This repository is a reproduction-oriented project. It does not vendor the full official LOG-LIO source code. The official code was cloned and built locally in a Docker/ROS workspace, while this repository records the reproduction notes, configuration notes, scripts, results, figures, troubleshooting records, and report materials.
+## What This Repository Contains
 
----
+* Built LOG-LIO in a ROS Noetic Docker environment.
+* Ran LOG-LIO on the M2DGR `door_02` sequence.
+* Verified LiDAR and IMU topic compatibility:
 
-## 1. Current Status
+  * `/velodyne_points`
+  * `/handsfree/imu`
+* Generated a complete trajectory output with 2469 poses.
+* Performed trajectory visualization and evo-based APE/RPE evaluation.
+* Analyzed runtime logs from `fast_lio_time_log.csv`.
+* Mapped the main algorithm modules to source code files.
 
-A complete first reproduction run has been finished on the **M2DGR `door_02`** sequence.
+## Method Overview
 
-Completed items:
+LOG-LIO improves LiDAR-inertial odometry by using local geometric information more efficiently.
 
-- Built LOG-LIO successfully in a ROS Noetic Docker environment.
-- Fixed ROS / PCL / OpenCV build issues and documented them.
-- Verified the M2DGR `door_02.bag` topics:
-  - `/velodyne_points`
-  - `/handsfree/imu`
-- Ran LOG-LIO on the full `door_02` sequence.
-- Generated a trajectory output file with 2469 valid rows.
-- Created trajectory sanity checks and trajectory visualization files.
-- Performed evo-based APE / RPE evaluation.
-- Analyzed runtime logs from `fast_lio_time_log.csv`.
-- Mapped the main LOG-LIO method components to source-code locations.
-
----
-
-## 2. Repository Structure
+The reproduced pipeline can be summarized as:
 
 ```text
-LOG-LIO-Reproduction-and-Analysis/
-├── README.md
-├── config_notes/
-│   ├── environment.md
-│   └── phase2_ubuntu_commands.md
-├── docs/
-│   ├── paper_notes.md
-│   ├── method_explanation.md
-│   ├── method_to_code_mapping.md
-│   ├── code_reading_notes.md
-│   ├── door_02_run_notes.md
-│   ├── door_02_result_analysis.md
-│   ├── trajectory_visualization_notes.md
-│   ├── runtime_log_analysis.md
-│   ├── evaluation_results.md
-│   └── reproduction_report.md
-├── results/
-│   ├── door_02_run1/
-│   ├── trajectories/
-│   ├── figures/
-│   ├── error_tables/
-│   └── run_log.csv
-└── troubleshooting/
-    └── ros_build_errors.md
-```
-
-Large datasets such as `.bag` files are not included in this repository.
-
----
-
-## 3. Method Summary
-
-LOG-LIO can be understood as the following pipeline:
-
-```text
-Raw LiDAR Scan + IMU
-        ↓
-IMU Processing / Scan Undistortion
-        ↓
-Ring FALS Normal Estimation
-        ↓
-Voxel Map / Extended ikd-tree
-        ↓
-Point Distribution Update
-        ↓
-Hierarchical Data Association
-(point-to-surfel → point-to-plane)
-        ↓
-Pose Optimization
-        ↓
-Updated Odometry + Local Map
+LiDAR + IMU
+   ↓
+IMU processing and scan undistortion
+   ↓
+Ring FALS normal estimation
+   ↓
+Voxel map / extended ikd-tree maintenance
+   ↓
+Point distribution update
+   ↓
+Hierarchical data association
+   ├── point-to-surfel
+   └── point-to-plane fallback
+   ↓
+Pose optimization
+   ↓
+Odometry trajectory
 ```
 
 The main method components studied in this project are:
 
-- **Ring FALS normal estimation**: estimates local surface normals using LiDAR scan ring and range-image structure.
-- **Voxel map / extended ikd-tree**: maintains local map information and voxel-level point distribution incrementally.
-- **Hierarchical data association**: prioritizes point-to-surfel association when local geometry is reliable and falls back to point-to-plane association when needed.
+| Component                   | Role                                                                                |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| Ring FALS normal estimation | Estimates local surface normals using LiDAR ring and range-image structure          |
+| Voxel / ikd-tree map        | Maintains local map and voxel-level point distribution                              |
+| Hierarchical association    | Uses surfel constraints when reliable and falls back to plane constraints otherwise |
+| Iterated state update       | Uses geometric residuals to update the LiDAR-IMU state                              |
 
-More detailed notes are available in:
+## Reproduction Setup
 
-- `docs/paper_notes.md`
-- `docs/method_explanation.md`
-- `docs/method_to_code_mapping.md`
-- `docs/code_reading_notes.md`
+| Item         | Configuration          |
+| ------------ | ---------------------- |
+| OS           | WSL2 Ubuntu            |
+| Container    | Docker                 |
+| ROS          | ROS Noetic             |
+| Build system | catkin                 |
+| Dataset      | M2DGR `door_02`        |
+| LiDAR topic  | `/velodyne_points`     |
+| IMU topic    | `/handsfree/imu`       |
+| Launch file  | `mapping_m2dgr.launch` |
+| Config file  | `velodyne_m2dgr.yaml`  |
 
----
 
-## 4. Environment
 
-The reproduction was carried out using:
+## Dataset
 
-- WSL2 Ubuntu
-- Docker
-- ROS Noetic
-- catkin workspace
-- PCL
-- Eigen
-- OpenCV
-- evo for trajectory evaluation
+This reproduction uses one selected M2DGR sequence instead of the full dataset.
 
-The final compiled executable was generated inside the Docker workspace:
+| Sequence  | Duration |   Size | Status                 |
+| --------- | -------: | -----: | ---------------------- |
+| `door_02` |    127 s | 9.8 GB | Successfully processed |
 
-```text
-/root/slam_ws/devel/lib/log_lio/loglio_mapping
-```
+The rosbag was checked with `rosbag info`, and the required topics were confirmed before running LOG-LIO.
 
-Environment and build notes are recorded in:
+## Run Commands
 
-- `config_notes/environment.md`
-- `config_notes/phase2_ubuntu_commands.md`
-- `troubleshooting/ros_build_errors.md`
-
----
-
-## 5. Dataset
-
-The first reproduction run uses the M2DGR **`door_02`** sequence.
-
-Rosbag information:
-
-```text
-Sequence: door_02
-Duration: about 127 s
-Size: about 9.8 GB
-LiDAR topic: /velodyne_points
-IMU topic: /handsfree/imu
-```
-
-The full M2DGR dataset is large, so this repository only documents selected sequence experiments instead of storing the original rosbag files.
-
----
-
-## 6. How to Run
-
-Inside the ROS Noetic Docker container:
+Terminal A:
 
 ```bash
 cd /root/slam_ws
@@ -155,7 +89,7 @@ source devel/setup.bash
 roslaunch log_lio mapping_m2dgr.launch rviz:=false
 ```
 
-In another terminal attached to the same container:
+Terminal B:
 
 ```bash
 cd /root/slam_ws/datasets/M2DGR
@@ -163,128 +97,120 @@ source /opt/ros/noetic/setup.bash
 rosbag play door_02.bag --topics /velodyne_points /handsfree/imu
 ```
 
-The main trajectory output is saved as:
+## Results
+
+Main output files:
+
+| File                                                | Description                       |
+| --------------------------------------------------- | --------------------------------- |
+| `results/door_02_run1/target_path.txt`              | LOG-LIO trajectory output         |
+| `results/door_02_run1/fast_lio_time_log.csv`        | Runtime log                       |
+| `results/run_log.csv`                               | Experiment record                 |
+| `results/trajectories/m2dgr_door_02_loglio_tum.txt` | Trajectory prepared for evo       |
+| `results/trajectories/m2dgr_door_02_gt_tum.txt`     | Converted ground-truth trajectory |
+
+The generated trajectory contains **2469 valid poses**.
+
+## Figures
+
+| Figure                | File                                                |
+| --------------------- | --------------------------------------------------- |
+| Method pipeline       | `results/figures/loglio_method_pipeline.svg`        |
+| Trajectory comparison | `results/figures/door_02_trajectory_comparison.pdf` |
+| APE plot              | `results/figures/door_02_ape.pdf`                   |
+| RPE plot              | `results/figures/door_02_rpe.pdf`                   |
+
+## Evaluation
+
+Trajectory evaluation was performed with `evo`.
+
+Main evaluation files:
 
 ```text
-Log/target_path.txt
+results/error_tables/ape_door_02.txt
+results/error_tables/rpe_door_02.txt
+results/error_tables/ape_door_02.zip
+results/error_tables/rpe_door_02.zip
 ```
 
-The copied reproduction result is stored in:
+The current evaluation is mainly position-based because the downloaded M2DGR ground-truth text file provides position values but does not include valid orientation quaternions.
 
-```text
-results/door_02_run1/target_path.txt
-```
-
----
-
-## 7. Results
-
-### 7.1 Trajectory Output
-
-The first successful run generated:
-
-```text
-results/door_02_run1/target_path.txt
-```
-
-The trajectory contains **2469 valid rows** in TUM-style format:
-
-```text
-timestamp x y z qx qy qz qw
-```
-
-### 7.2 Runtime Observation
-
-The runtime log is stored in:
-
-```text
-results/door_02_run1/fast_lio_time_log.csv
-```
-
-Summary from the current run:
-
-```text
-Logged frames: 1268
-Average total processing time per frame: about 0.0724 s
-Average scan point size: about 12043 points
-Average preprocess time: about 0.0150 s
-Average incremental map update time: about 0.0116 s
-Average added map points per frame: about 1022 points
-```
-
-### 7.3 Evaluation Files
-
-The evo-based evaluation files are stored in:
-
-```text
-results/error_tables/
-```
-
-Important files:
-
-- `ape_door_02.txt`
-- `rpe_door_02.txt`
-- `ape_door_02.zip`
-- `rpe_door_02.zip`
-
-The evaluation notes are in:
+Detailed notes:
 
 ```text
 docs/evaluation_results.md
 ```
 
-The current ground-truth text file provides position values but does not contain valid orientation quaternions. Therefore, the current APE / RPE evaluation should be interpreted mainly as a **position-based trajectory evaluation**.
+## Runtime Observation
 
----
+Runtime statistics were extracted from:
 
-## 8. Figures
+```text
+results/door_02_run1/fast_lio_time_log.csv
+```
 
-Generated figures include:
+For the `door_02` run:
 
-- `results/figures/door_02_trajectory_comparison.pdf`
-- `results/figures/door_02_ape.pdf`
-- `results/figures/door_02_rpe.pdf`
-- `results/figures/loglio_method_pipeline.svg`
-- `results/door_02_run1/trajectory_xy.svg`
-- `results/door_02_run1/trajectory_z_time.svg`
+| Metric                              |                Value |
+| ----------------------------------- | -------------------: |
+| Logged frames                       |                 1268 |
+| Average total processing time       |     0.0724 s / frame |
+| Average scan size                   | 12043 points / frame |
+| Average preprocessing time          |     0.0150 s / frame |
+| Average incremental map update time |     0.0116 s / frame |
+| Average added map points            |  1022 points / frame |
 
-The method pipeline figure summarizes the connection between LiDAR/IMU input, Ring FALS normal estimation, voxel map maintenance, hierarchical association, and pose optimization.
+This confirms that LOG-LIO produced not only a trajectory but also frame-level runtime information during the reproduction.
 
----
+## Code Reading Map
 
-## 9. Troubleshooting
+| Module                      | Main files                                                         |
+| --------------------------- | ------------------------------------------------------------------ |
+| Main pipeline               | `src/laserMapping.cpp`                                             |
+| IMU processing              | `src/IMU_Processing.hpp`                                           |
+| Point cloud preprocessing   | `src/preprocess.cpp`, `src/preprocess.h`                           |
+| Ring FALS normal estimation | `src/ring_fals/Image_normals.hpp`, `src/ring_fals/range_image.cpp` |
+| ikd-tree map                | `include/ikd-Tree/ikd_Tree.cpp`, `include/ikd-Tree/ikd_Tree.h`     |
+| Voxel / surfel utility      | `include/voxel_map_util.hpp`                                       |
 
-The reproduction involved several practical ROS and build issues, including missing ROS packages and OpenCV linking problems. These were recorded in:
+More details are recorded in:
 
-- `troubleshooting.md`
-- `troubleshooting/ros_build_errors.md`
+```text
+docs/method_to_code_mapping.md
+docs/code_reading_notes.md
+```
 
-This is included intentionally because reproducing a SLAM system is not only about running a final command. The build and dataset issues are part of the engineering process.
+## Repository Structure
 
----
+```text
+LOG-LIO-Reproduction-and-Analysis/
+├── README.md
+├── docs/
+│   ├── paper_notes.md
+│   ├── method_explanation.md
+│   ├── method_to_code_mapping.md
+│   ├── code_reading_notes.md
+│   ├── evaluation_results.md
+│   └── runtime_log_analysis.md
+├── results/
+│   ├── door_02_run1/
+│   ├── trajectories/
+│   ├── figures/
+│   ├── error_tables/
+│   └── run_log.csv
+├── config_notes/
+└── troubleshooting/
+```
 
-## 10. Limitations and Next Steps
+## Limitations
 
-Current limitations:
+* Only one M2DGR sequence has been tested so far.
+* The downloaded M2DGR door_02 ground-truth file provides valid position values, but its quaternion fields are all zeros. Therefore, this repository reports position-based trajectory evaluation only. Full 6-DoF pose evaluation is left for future work with complete ground-truth orientation data.
+* No algorithmic modification is included in this repository.
+* A full benchmark across multiple sequences is not yet performed.
 
-- Only one M2DGR sequence has been fully processed so far.
-- The current ground-truth orientation is not valid, so evaluation mainly focuses on position error.
-- No algorithmic modification has been made.
-- No comparison with FAST-LIO2 or other baselines has been completed yet.
+## References
 
-Possible next steps:
-
-- Run a second M2DGR sequence.
-- Add a clearer failure or drift analysis case.
-- Improve the reproduction report into a polished PDF.
-- Compare LOG-LIO with another LIO baseline or published reference result.
-- Inspect the Ring FALS and surfel association implementation in more detail.
-
----
-
-## 11. References
-
-- LOG-LIO official repository: https://github.com/tiev-tongji/LOG-LIO
-- LOG-LIO paper: https://arxiv.org/abs/2307.09531
-- M2DGR dataset: https://github.com/SJTU-ViSYS/M2DGR
-- evo trajectory evaluation tool: https://github.com/MichaelGrupp/evo
+* LOG-LIO: A LiDAR-Inertial Odometry with Efficient Local Geometric Information Estimation
+* M2DGR: A Multi-modal and Multi-scenario Dataset for Ground Robots
+* evo: Python package for trajectory evaluation of odometry and SLAM
