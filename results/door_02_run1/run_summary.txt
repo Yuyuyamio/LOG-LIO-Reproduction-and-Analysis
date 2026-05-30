@@ -1,0 +1,22 @@
+LOG-LIO reproduction run summary
+
+Dataset:
+- M2DGR door_02.bag
+- Duration: 127 s
+- LiDAR topic: /velodyne_points
+- IMU topic: /handsfree/imu
+
+Run command:
+- roslaunch log_lio mapping_m2dgr.launch rviz:=false
+- rosbag play door_02.bag --topics /velodyne_points /handsfree/imu
+
+Output:
+- target_path.txt generated successfully
+- target_path.txt line count: 2469
+- pos_log.txt generated
+- fast_lio_time_log.csv generated
+
+Build status:
+- loglio_mapping built successfully
+- ROS launch smoke test passed
+- Full rosbag playback completed

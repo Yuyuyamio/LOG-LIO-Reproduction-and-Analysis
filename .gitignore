@@ -1,0 +1,10 @@
+
+# Large datasets
+*.bag
+datasets/
+loglio_docker_ws/
+
+# Large datasets
+*.bag
+datasets/
+loglio_docker_ws/
