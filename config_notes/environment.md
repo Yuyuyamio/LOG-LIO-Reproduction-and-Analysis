@@ -1,105 +1,40 @@
 # Environment Notes
 
-## 1. Current Stage
+## Setup
 
-At this stage, the repository is prepared on Windows. The actual LOG-LIO build and ROS execution should be performed in an Ubuntu / ROS environment.
+| Item       | Setting               |
+| ---------- | --------------------- |
+| Host       | Windows + WSL2 Ubuntu |
+| Runtime    | Docker container      |
+| ROS        | Noetic                |
+| Build      | catkin                |
+| Dataset    | M2DGR `door_02`       |
+| Evaluation | evo                   |
 
-The Windows system is mainly used for:
-- writing documentation
-- organizing the reproduction repository
-- preparing scripts
-- managing GitHub files
+LOG-LIO was built and tested inside the ROS Noetic Docker container.
+This repository only stores reproduction notes, results, figures, and analysis documents.
 
-The Ubuntu / ROS environment will be used for:
-- cloning and building the official LOG-LIO source code
-- running catkin_make
-- launching LOG-LIO
-- playing M2DGR rosbag files
-- saving trajectory and RViz results
+## Workspace
 
----
-
-## 2. Target Reproduction Environment
-
-Recommended environment:
-
-- Operating System: Ubuntu 20.04
-- ROS Version: ROS Noetic
-- Build System: catkin
-- Main Tools:
-  - CMake
-  - GCC / G++
-  - PCL
-  - Eigen
-  - Python 3
-  - evo for trajectory evaluation
-
----
-
-## 3. Important Version Note
-
-ROS Noetic was designed mainly for Ubuntu 20.04, so Ubuntu 20.04 + ROS Noetic is the safest environment for reproducing this older ROS 1 project.
-
-However, ROS Noetic has reached end-of-life. For this project, it is still acceptable because the goal is academic reproduction of an existing ROS 1 SLAM system, not long-term deployment.
-
----
-
-## 4. Recommended Setup Choice
-
-Preferred option:
-
-Use Ubuntu 20.04 directly, either on:
-- a native Ubuntu installation
-- a dual-boot system
-- a virtual machine with enough RAM and disk space
-
-Possible but less ideal option:
-
-Use WSL2 on Windows. This may work for compiling and command-line experiments, but RViz and graphics-related tools may create extra problems.
-
-For this reproduction project, a real Ubuntu 20.04 environment is cleaner and easier to explain in the report.
-
----
-
-## 5. Planned Workspace
-
-The official LOG-LIO code should be cloned into a ROS workspace, not copied into this reproduction repository.
-
-Planned workspace on Ubuntu:
-
-```bash
-mkdir -p ~/slam_ws/src
-cd ~/slam_ws/src
-git clone https://github.com/tiev-tongji/LOG-LIO.git
-cd ..
-catkin_make
-source devel/setup.bash
+```text
+/root/slam_ws
 ```
 
----
+Large dataset files such as `.bag` are excluded from this repository.
 
-## 6. Repository Strategy
+## Run
 
-The reproduction repository only stores:
+```bash
+roslaunch log_lio mapping_m2dgr.launch rviz:=false
+rosbag play door_02.bag --topics /velodyne_points /handsfree/imu
+```
 
-- notes
-- scripts
-- configuration records
-- result tables
-- figures
-- final report
+## Notes
 
-The official LOG-LIO source code is used locally for building and testing, but it is not copied into this repository.
+Build issues are recorded in:
 
----
+```text
+troubleshooting/ros_build_errors.md
+```
 
-## 7. Environment Checklist
-
-- [ ] Ubuntu 20.04 environment ready
-- [ ] ROS Noetic installed
-- [ ] catkin workspace created
-- [ ] official LOG-LIO repository cloned locally
-- [ ] dependencies installed
-- [ ] catkin_make executed
-- [ ] build errors recorded in troubleshooting/ros_build_errors.md
-- [ ] source devel/setup.bash tested
+RViz was disabled during the main run to avoid display issues in the WSL/Docker environment.
