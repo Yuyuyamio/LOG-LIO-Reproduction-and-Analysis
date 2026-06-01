@@ -1,3 +1,4 @@
 run_id,dataset,sequence,launch_file,config_file,start_time,end_time,trajectory_rows,success,notes
-door_02_run1,M2DGR,door_02,mapping_m2dgr.launch,velodyne_m2dgr.yaml,1628062054.8588,1628062181.7062,2469,yes,"Full rosbag playback completed. LOG-LIO generated trajectory output. GT quaternion fields are all zeros, so evaluation is treated as position-based."
-room_01_run1,M2DGR,room_01,mapping_m2dgr.launch,velodyne_m2dgr.yaml,1627643483.4151,1627643555.6563,722,yes,"Full rosbag playback completed. LOG-LIO generated trajectory output. GT quaternion fields are valid, so room_01 is used as the main quantitative evaluation sequence."
+door_02_run1,M2DGR,door_02,mapping_m2dgr.launch,velodyne_m2dgr.yaml,1628062054.8588,1628062181.7062,2469,yes,"Full rosbag playback completed. LOG-LIO generated trajectory output. GT quaternion fields are all zeros, so only translation-level sanity checking is reported."
+room_01_run1,M2DGR,room_01,mapping_m2dgr.launch,velodyne_m2dgr.yaml,1627643483.4151,1627643555.6563,722,yes,"Full rosbag playback completed. LOG-LIO generated trajectory output. GT quaternion fields are valid, but rotation metrics are not reported because the frame convention is unresolved."
+room_01_no_surfel,M2DGR,room_01,mapping_m2dgr.launch,velodyne_m2dgr.yaml,1627643483.4151,1627643555.7564,723,yes,"Ablation run with cloud_surfel=false and point_surfel=false."
