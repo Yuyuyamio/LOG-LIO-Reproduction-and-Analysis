@@ -1,0 +1,19 @@
+LOG-LIO reproduction run summary
+
+Dataset:
+- M2DGR room_01.bag
+- LiDAR topic: /velodyne_points
+- IMU topic: /handsfree/imu
+
+Run command:
+- roslaunch log_lio mapping_m2dgr.launch rviz:=false
+- rosbag play room_01.bag --topics /velodyne_points /handsfree/imu
+
+Output:
+- target_path.txt generated successfully
+- target_path.txt line count: 722
+- pos_log.txt generated
+- fast_lio_time_log.csv generated
+
+Status:
+- Full run completed and trajectory output was generated.
