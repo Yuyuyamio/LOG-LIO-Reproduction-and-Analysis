@@ -1,42 +1,30 @@
 # M2DGR Configuration Notes
 
-## Tested Sequence
+## Sequences
 
-| Item            | Value     |
-| --------------- | --------- |
-| Dataset         | M2DGR     |
-| Sequence        | `door_02` |
-| Rosbag duration | 127 s     |
-| Rosbag size     | 9.8 GB    |
+| Sequence | Rosbag size | Role |
+|---|---:|---|
+| `door_02` | 9.8 GB | Successful run and position-level sanity check |
+| `room_01` | 13.9 GB | Main quantitative sequence and ablation sequence |
 
 ## Required Topics
 
-| Sensor | Topic              |
-| ------ | ------------------ |
-| LiDAR  | `/velodyne_points` |
-| IMU    | `/handsfree/imu`   |
+| Sensor | Topic |
+|---|---|
+| LiDAR | `/velodyne_points` |
+| IMU | `/handsfree/imu` |
 
-These two topics were confirmed with `rosbag info` before running LOG-LIO.
+These topics were confirmed with `rosbag info` before running LOG-LIO.
 
 ## LOG-LIO Files Used
 
-| Type        | File                          |
-| ----------- | ----------------------------- |
+| Type | File |
+|---|---|
 | Launch file | `launch/mapping_m2dgr.launch` |
-| Config file | `config/velodyne_m2dgr.yaml`  |
-
-## Run Setting
-
-RViz was disabled during the main run:
-
-`roslaunch log_lio mapping_m2dgr.launch rviz:=false`
-
-The rosbag was played with only the required topics:
-
-`rosbag play door_02.bag --topics /velodyne_points /handsfree/imu`
+| Config file | `config/velodyne_m2dgr.yaml` |
 
 ## Notes
 
-The run generated `target_path.txt`, `pos_log.txt`, and `fast_lio_time_log.csv`.
+`door_02` provides valid position values but invalid quaternion fields in the downloaded ground-truth file, so it is used only as a position-level sanity check.
 
-The ground-truth text file used for evaluation provides valid position values, but its quaternion fields are all zeros. Therefore, the current evo evaluation is treated as position-based trajectory evaluation.
+`room_01` is used as the main quantitative sequence. The no-surfel ablation is also based on `room_01`.
