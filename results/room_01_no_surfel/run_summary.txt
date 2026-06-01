@@ -1,0 +1,21 @@
+LOG-LIO ablation run summary
+
+Dataset:
+- M2DGR room_01.bag
+
+Ablation setting:
+- cloud_surfel: false
+- point_surfel: false
+
+Purpose:
+- Test LOG-LIO behavior when surfel association is disabled.
+
+Run command:
+- roslaunch log_lio mapping_m2dgr.launch rviz:=false
+- rosbag play room_01.bag --topics /velodyne_points /handsfree/imu
+
+Output:
+- target_path.txt generated successfully
+- target_path.txt line count: 723
+- pos_log.txt generated
+- fast_lio_time_log.csv generated
