@@ -1,59 +1,38 @@
-# Evaluation Results: M2DGR door_02
+# Evaluation Results
 
-## 1. Purpose
+## Sequences
 
-This document records the trajectory evaluation result of LOG-LIO on the M2DGR `door_02` sequence.
+Two M2DGR sequences were evaluated in this reproduction.
 
-The evaluation was performed using `evo`.
+| Sequence | Evaluation Scope | APE RMSE (m) | APE Mean (m) | RPE RMSE (m) | RPE Mean (m) | Status |
+|---|---|---:|---:|---:|---:|---|
+| door_02 | position-based | 0.246345 | 0.226276 | 0.365113 | 0.218278 | success |
+| room_01 | valid GT quaternion | 0.249044 | 0.241277 | 0.078890 | 0.064087 | success |
 
-## 2. Trajectories
+## Interpretation
 
-Estimated trajectory:
+The `door_02` sequence was successfully processed, but its downloaded ground-truth text file contains valid position values while the quaternion fields are all zeros. Therefore, its evo result is reported as a position-based trajectory evaluation.
 
-results/trajectories/m2dgr_door_02_loglio_tum.txt
+The `room_01` sequence provides valid quaternion fields in the ground-truth file. Its evaluation is therefore more suitable as the main quantitative result. LOG-LIO achieved an APE RMSE of 0.249044 m and an RPE RMSE of 0.078890 m on this sequence after evo alignment.
 
-Ground truth trajectory:
+## Generated Files
 
-results/trajectories/m2dgr_door_02_gt_tum.txt
+Evaluation tables:
 
-The ground truth file provides timestamp and position. Since its orientation columns are zero, a unit quaternion was used during conversion:
+- `results/error_tables/ape_door_02.txt`
+- `results/error_tables/rpe_door_02.txt`
+- `results/error_tables/ape_room_01.txt`
+- `results/error_tables/rpe_room_01.txt`
 
-0 0 0 1
+Figures:
 
-Therefore, the current evaluation should be interpreted mainly as a position-based trajectory evaluation.
+- `results/figures/door_02_trajectory_comparison.pdf`
+- `results/figures/door_02_ape.pdf`
+- `results/figures/door_02_rpe.pdf`
+- `results/figures/room_01_trajectory_comparison.pdf`
+- `results/figures/room_01_ape.pdf`
+- `results/figures/room_01_rpe.pdf`
 
-## 3. Evaluation Commands
+Summary table:
 
-APE / ATE command:
-
-evo_ape tum results/trajectories/m2dgr_door_02_gt_tum.txt results/trajectories/m2dgr_door_02_loglio_tum.txt -a
-
-RPE command:
-
-evo_rpe tum results/trajectories/m2dgr_door_02_gt_tum.txt results/trajectories/m2dgr_door_02_loglio_tum.txt -a
-
-## 4. Result Summary
-
-| Sequence | ATE RMSE / APE RMSE | ATE Mean / APE Mean | RPE RMSE | RPE Mean | Status |
-|---|---:|---:|---:|---:|---|
-| M2DGR door_02 | 0.246345 m | 0.226276 m | 0.365113 m | 0.218278 m | Success |
-
-## 5. Generated Figures
-
-The following figures were generated:
-
-- results/figures/door_02_trajectory_comparison.pdf
-- results/figures/door_02_ape.pdf
-- results/figures/door_02_rpe.pdf
-
-## 6. Interpretation
-
-The APE result measures the global position error after alignment. It is useful for checking the overall difference between the reproduced LOG-LIO trajectory and the reference trajectory.
-
-The RPE result measures relative motion error. It is useful for checking local drift between nearby trajectory segments.
-
-At this stage, the result should be treated as a reproduction-oriented evaluation rather than a full benchmark. The main purpose is to prove that the reproduced system can process a real M2DGR sequence, generate a trajectory, and be evaluated with standard SLAM evaluation tools.
-
-## 7. Limitation
-
-The M2DGR door_02 ground truth text file used here contains position values but no valid orientation quaternion. Because of this, the current evaluation focuses on position consistency. A more complete evaluation would require a ground truth file with valid orientation or an official benchmark-format trajectory.
+- `results/evaluation_summary.csv`
