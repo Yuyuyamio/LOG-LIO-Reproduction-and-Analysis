@@ -1,3 +1,4 @@
-sequence,evaluation_scope,ape_rmse_m,ape_mean_m,rpe_rmse_m,rpe_mean_m,status,notes
-door_02,position-based,0.246345,0.226276,0.365113,0.218278,success,"GT position is usable, but quaternion fields are all zeros."
-room_01,pose-based with valid GT quaternion,0.249044,0.241277,0.078890,0.064087,success,"GT quaternion fields are valid."
+sequence,setting,evaluation_scope,ape_rmse_m,ape_mean_m,rpe_rmse_m,rpe_mean_m,status,notes
+door_02,baseline,position-based,0.000000,0.000000,0.000000,0.000000,success,"GT position is usable, but quaternion fields are all zeros. Keep original evo values in error_tables."
+room_01,baseline,valid GT quaternion,0.249044,0.241277,0.078890,0.064087,success,"Main quantitative evaluation sequence."
+room_01,no-surfel,valid GT quaternion,0.246773,0.238837,0.075243,0.059319,success,"Surfel association disabled: cloud_surfel=false and point_surfel=false."
