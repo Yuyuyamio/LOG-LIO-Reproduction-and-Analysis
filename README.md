@@ -152,8 +152,7 @@ On this short indoor sequence, disabling surfel association did not degrade the 
 | `docs/method_to_code_mapping.md`      | Mapping from method modules to code files |
 | `docs/code_reading_notes.md`          | Code reading notes                        |
 | `docs/evaluation_results.md`          | Evaluation result explanation             |
-| `docs/failure_analysis.md`            | Drift / short-term error discussion       |
+| `docs/local_error_spike_analysis.md`  | Local error spike discussion              |
 | `docs/rotation_evaluation_notes.md`   | Rotation evaluation limitation            |
 | `docs/visualization_notes.md`         | RViz visualization notes                  |
 | `config_notes/parameter_notes.md`     | No-surfel ablation notes                  |
-| `troubleshooting/ros_build_errors.md` | Build troubleshooting record              |
