@@ -1,0 +1,30 @@
+# Large datasets
+*.bag
+*.bag.active
+*.bag.orig
+datasets/
+loglio_docker_ws/
+
+# ROS / catkin build outputs
+build/
+devel/
+install/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+evo_venv/
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
