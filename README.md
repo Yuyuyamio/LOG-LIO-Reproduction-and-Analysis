@@ -2,7 +2,8 @@
 
 This repository documents a reproduction and analysis of **LOG-LIO**, a LiDAR-Inertial Odometry system based on efficient local geometric information estimation.
 
-The goal of this project is not to modify the original algorithm. Instead, it focuses on building LOG-LIO, running it on selected M2DGR sequences, evaluating the trajectory outputs, and connecting the paper-level method with source-code modules.
+This project reproduces LOG-LIO on selected M2DGR sequences and analyzes how its local geometric information modules are reflected in the implementation. It covers environment setup, trajectory generation, evo-based evaluation, runtime analysis, RViz visualization, and method-to-code mapping.
+
 
 ## What This Repository Contains
 
@@ -141,7 +142,6 @@ On this short indoor sequence, disabling surfel association did not degrade the 
 * `door_02` is not used as a full pose evaluation sequence because its quaternion fields are invalid.
 * Rotation APE/RPE is not reported because the ground-truth orientation frame and LOG-LIO output frame require further verification.
 * The no-surfel experiment is a small ablation on one indoor sequence only.
-* FAST-LIO / FAST-LIO2 comparison was investigated but not included as a final result.
 
 ## Main Documentation
 
