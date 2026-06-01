@@ -1,12 +1,10 @@
-Runtime Summary: M2DGR door_02
-
+Runtime Summary: door_02_run1
 Input file: results/door_02_run1/fast_lio_time_log.csv
-Logged frames: 0
-
-Average total processing time: 0.000000 s/frame
-Average scan point size: 0.00 points/frame
-Average incremental map update time: 0.000000 s/frame
+Logged frames: 1268
+Average total processing time: 0.072380 s/frame
+Average scan point size: 12043.14 points/frame
+Average incremental map update time: 0.011605 s/frame
 Average search time: 0.000000 s/frame
 Average delete time: 0.000000 s/frame
-Average added map points: 0.00 points/frame
-Average preprocess time: 0.000000 s/frame
+Average added map points: 1022.19 points/frame
+Average preprocess time: 0.015047 s/frame

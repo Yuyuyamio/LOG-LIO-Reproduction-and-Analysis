@@ -1,0 +1,10 @@
+Runtime Summary: room_01_run1
+Input file: results/room_01_run1/fast_lio_time_log.csv
+Logged frames: 725
+Average total processing time: 0.020905 s/frame
+Average scan point size: 11054.69 points/frame
+Average incremental map update time: 0.001679 s/frame
+Average search time: 0.000000 s/frame
+Average delete time: 0.000000 s/frame
+Average added map points: 210.35 points/frame
+Average preprocess time: 0.010635 s/frame
