@@ -1,14 +1,33 @@
-
 # Large datasets
 *.bag
+*.bag.active
+*.bag.orig
 datasets/
 loglio_docker_ws/
 
-# Large datasets
-*.bag
-datasets/
-loglio_docker_ws/
-
-# Python virtual environments
-venv/
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 .venv/
+venv/
+evo_venv/
+
+# ROS / catkin build outputs
+build/
+devel/
+install/
+*.log
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.bak
+*.backup
