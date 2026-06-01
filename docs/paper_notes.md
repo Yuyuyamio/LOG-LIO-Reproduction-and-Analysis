@@ -2,123 +2,110 @@
 
 ## 1. Basic Information
 
-Paper title: LOG-LIO: A LiDAR-Inertial Odometry with Efficient Local Geometric Information Estimation
+**Paper:** LOG-LIO: A LiDAR-Inertial Odometry with Efficient Local Geometric Information Estimation
 
-Project type: reproduction and analysis
+This project focuses on reproducing LOG-LIO and understanding how its local geometric information modules support LiDAR-Inertial Odometry. The main learning target is to connect the paper concepts with the implementation and reproduction results.
 
-My goal is not to propose a new SLAM algorithm. My goal is to understand how LOG-LIO uses local geometric information to improve LiDAR-Inertial Odometry.
+## 2. What Problem Does LOG-LIO Address?
 
----
+In a LiDAR-Inertial Odometry system, each incoming LiDAR scan needs to be registered against a local map. This scan-to-map registration depends heavily on local geometric information.
 
-## 2. What problem does LOG-LIO solve?
+LOG-LIO focuses on two practical issues:
 
-LOG-LIO focuses on the efficiency and quality of local geometric information estimation in LiDAR-Inertial Odometry.
+- local geometric information can be expensive to estimate;
+- unreliable local geometry can weaken data association and pose optimization.
 
-In a LIO system, LiDAR scans need to be matched with a local map. This matching process depends heavily on local geometric information. If the local geometry is estimated slowly, the system becomes less efficient. If the local geometry is unreliable, data association and pose optimization may become inaccurate.
+The paper therefore aims to make local geometric information both efficient to compute and useful for odometry estimation.
 
-Therefore, LOG-LIO tries to make local geometric information both efficient and useful for scan-to-map registration.
+## 3. Local Geometric Information
 
----
+In this project, local geometric information is understood mainly as:
 
-## 3. What is local geometric information?
+- **normal information**
+- **point distribution information**
 
-In LOG-LIO, local geometric information mainly includes:
+Normal information describes the local surface direction. Point distribution information describes how points are arranged inside a local region or voxel.
 
-- normal information
-- point distribution information
+Together, they help the system decide whether a local region provides reliable geometric constraints.
 
-Normal information describes the local surface direction.
-
-Point distribution information describes how LiDAR points are distributed inside a local region or voxel.
-
-Together, these two types of information help the system decide whether a local area can provide reliable geometric constraints.
-
----
-
-## 4. Why is normal estimation important?
+## 4. Why Normal Estimation Matters
 
 Normal estimation is important because many LiDAR registration constraints depend on local surface direction.
 
-For example, in point-to-plane matching, the residual is measured along the normal direction of a local plane. If the normal is inaccurate, the optimization may push the pose in a wrong direction.
+For example, point-to-plane matching measures the residual along a local normal direction. If the normal is inaccurate, the optimization can be pushed in a wrong direction.
 
-Therefore, normal estimation directly affects data association and pose optimization.
+This means normal estimation directly affects:
 
----
+- data association;
+- residual construction;
+- pose optimization quality.
 
-## 5. Why is point distribution important?
+## 5. Ring FALS Normal Estimation
 
-Point distribution helps the system judge whether a local region has a stable geometric structure.
+Ring FALS is used to estimate local normals efficiently.
 
-For example, if points in a voxel form a clear surface, the region may provide a reliable surfel constraint. If the points are scattered or unstable, the system should not fully trust this local structure.
+Instead of treating the LiDAR point cloud as an unordered set and repeatedly searching local neighbors, LOG-LIO uses the ring structure and range information of rotating LiDAR scans.
 
-This is why LOG-LIO maintains point distribution information in the map.
+My understanding is that Ring FALS is important because it uses information already available in the LiDAR scan structure, reducing the cost of normal estimation.
 
----
+## 6. Point Distribution and Voxel Map
 
-## 6. What does Ring FALS do?
+LOG-LIO extends the ikd-tree structure to manage local map information using voxels. Each voxel can maintain point distribution information.
 
-Ring FALS is used for efficient normal estimation.
+Point distribution is useful because it indicates whether a local region forms a stable surface-like structure.
 
-Instead of performing expensive nearest-neighbor search for every point, LOG-LIO uses the ring structure and range information of LiDAR scans. This makes normal estimation faster because the method takes advantage of the natural scan organization of the LiDAR sensor.
+For example:
 
-My understanding:
+- if the points in a voxel form a clear local surface, the region may provide a reliable surfel constraint;
+- if the points are scattered or unstable, the system should use this region more carefully.
 
-Ring FALS is designed to reduce the cost of local normal estimation while still keeping useful local geometric information.
+This makes the map structure more informative than a simple point container.
 
----
+## 7. Point-to-Surfel vs Point-to-Plane
 
-## 7. What does the extended ikd-tree do?
+**Point-to-plane association** uses a local plane constraint. It mainly depends on the estimated local plane and its normal direction.
 
-LOG-LIO extends the ikd-tree structure to manage the local map using voxels.
+**Point-to-surfel association** uses richer local surface information, including point distribution. It can provide a stronger constraint when the local surface structure is reliable.
 
-Each voxel maintains point distribution information. When new scans arrive, the map and voxel-level distribution information are updated incrementally.
+In this project, this difference is also reflected in the no-surfel ablation on `room_01`, where `cloud_surfel` and `point_surfel` were disabled to observe the effect of surfel association.
 
-My understanding:
+## 8. Hierarchical Data Association
 
-The extended ikd-tree is not only used for nearest-neighbor search. It also helps maintain local geometric statistics for the map.
+LOG-LIO uses hierarchical data association.
 
----
+The system first tries to use point-to-surfel association. If the local surfel information is reliable, this richer constraint is used. If the local structure is not reliable enough, the system falls back to point-to-plane association.
 
-## 8. What is the difference between point-to-surfel and point-to-plane?
+My understanding is that this design gives the system a balance between using richer constraints and avoiding unreliable geometry.
 
-Point-to-plane association uses a local plane constraint. It mainly depends on the estimated plane and its normal direction.
+## 9. Main Contributions Understood
 
-Point-to-surfel association uses richer local surface information. A surfel contains not only a surface direction but also local point distribution information.
+Based on this reproduction, the main contributions I understood are:
 
-Therefore, point-to-surfel can provide a stronger constraint when the local surface structure is reliable.
+1. LOG-LIO emphasizes the role of local geometric information in LiDAR-Inertial Odometry.
+2. Ring FALS improves normal estimation efficiency by using LiDAR scan structure.
+3. The extended ikd-tree maintains voxel-level point distribution information.
+4. Hierarchical data association uses point-to-surfel constraints when reliable and falls back to point-to-plane constraints when needed.
+5. The method connects normal estimation, map maintenance, association, and pose optimization into one LIO pipeline.
 
----
+## 10. Connection to This Reproduction
 
-## 9. What is hierarchical data association?
+This repository reproduces LOG-LIO on selected M2DGR sequences.
 
-Hierarchical data association means LOG-LIO does not use only one type of constraint.
+The main experimental evidence includes:
 
-The system first tries to use point-to-surfel association. If the local surfel information is reliable, this richer constraint is used. If it is not reliable, the system falls back to point-to-plane association.
+- successful runs on `door_02` and `room_01`;
+- TUM trajectory outputs;
+- translation-based APE/RPE evaluation;
+- RViz local map and path visualization;
+- runtime analysis;
+- no-surfel ablation on `room_01`.
 
-My understanding:
+The reproduction helped me understand that LOG-LIO is not only about fusing LiDAR and IMU measurements. Its key idea is to make local geometric information efficient, reliable, and useful for data association and pose optimization.
 
-This design makes the system more flexible. It uses stronger constraints when possible, but avoids trusting unreliable local geometry.
+## 11. Current Limitations
 
----
+The current reproduction reports translation-based APE/RPE as the reliable quantitative result.
 
-## 10. Main contributions of LOG-LIO
+Rotation APE/RPE is not reported because direct quaternion comparison between M2DGR ground truth and LOG-LIO output produced unrealistic errors. This suggests that the ground-truth orientation frame and LOG-LIO output frame require further verification before reporting rotation metrics.
 
-Based on my current understanding, the main contributions are:
-
-1. It emphasizes the importance of local geometric information in LiDAR-Inertial Odometry.
-2. It proposes Ring FALS for efficient normal estimation using LiDAR scan structure.
-3. It extends ikd-tree to maintain voxel-level point distribution information.
-4. It designs a hierarchical data association strategy using point-to-surfel first and point-to-plane as fallback.
-5. It connects normal estimation, map maintenance, data association, and pose optimization into one LIO pipeline.
-
----
-
-## 11. My current summary
-
-LOG-LIO is important because it shows that LIO performance is not only about sensor fusion or optimization. The quality and efficiency of local geometric information also matter.
-
-The key logic is:
-
-Raw LiDAR and IMU data provide motion and scan information. Ring FALS estimates local normals efficiently. The extended ikd-tree maintains voxel-level point distribution. Then hierarchical data association selects suitable geometric constraints for pose optimization.
-
-This makes the system more efficient and more geometrically aware.
+The no-surfel ablation was only tested on one indoor sequence, so it should be interpreted as a small reproduction-level analysis rather than a general conclusion about the algorithm.
